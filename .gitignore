@@ -1,0 +1,6 @@
+# Git Ignore #
+
+# pycache folder
+__pycache__/
+
+
