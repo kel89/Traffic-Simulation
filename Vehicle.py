@@ -9,6 +9,8 @@ Kenny Lipke
 August 2019
 """
 
+import numpy as np
+
 
 class Vehicle:
 	"""
