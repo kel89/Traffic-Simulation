@@ -54,17 +54,18 @@ class Vehicle:
 	"""
 	
 	def __init__(self, target_speed, target_following_distance, vehicle_infront,
-				vehicle_behind, sim_length, start_position=0):
+				vehicle_behind, sim_length, hz=1, start_position=0):
 		"""
 		Sets fields and initialize trackers
 		"""
 		# Set fields
-		self.target_speed = target_speed
-		self.target_following_distance = target_following_distance
+		self.target_speed = target_speed # in mph
+		self.target_following_distance = target_following_distance # in feet
 		self.vehicle_infront = vehicle_infront
 		self.vehicle_behind = vehicle_behind
 		self.sim_length = sim_length
 		self.speed_override = None
+		self.hz = hz
 		
 		# Initialize trackers
 		self.position_array = np.zeros(self.sim_length+1) # so we accomodate start
