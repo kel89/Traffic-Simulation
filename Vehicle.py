@@ -20,7 +20,7 @@ class Vehicle:
 						  slowing for vehicle infront
 		
 		target_following_distance:    desired distance between this vehicle and
-									  the one infront of it
+									  the one infront of it (to be tracked in FEET)
 		
 		vehicle_infront:   reference to the vehilce infront, None if 
 						   this is the first in line
@@ -72,6 +72,8 @@ class Vehicle:
 		self.current_position = start_position
 		self.current_tick = 0
 		self.current_speed = self.target_speed # start at desired speed
+
+		self.FEET_PER_SECOND = 88
 		
 	def set_speed_override(self, val):
 		"""
@@ -110,7 +112,7 @@ class Vehicle:
 		
 		# move simulation
 		self.current_tick += 1
-		self.current_position += next_speed
+		self.current_position += next_speed*self.FEET_PER_SECOND/(self.hz)
 		self.current_speed = next_speed
 		
 		# track changes
@@ -120,7 +122,7 @@ class Vehicle:
 		"""
 		Looks at the current position of the vehicle, and 
 		the current position of the vehicle infront
-		returns the delta
+		returns the delta in feet
 		"""
 		# Get the position of the vehicle infront (if exists)
 		if (self.vehicle_infront == None):
@@ -137,11 +139,34 @@ class Vehicle:
 		and returns the speed that the model would dictate in an attempt to maintain
 		the desired following distance the next step
 		 = min(target_speed, delta_true/detla_target * target_speed)
+
+		Here is where we need to figure out how to deal with the hertz
+
+		Lets say a car can change speed at most 5mph/s, if following_distnace
+		is less than the target, then we decrease the speed, if it
+		is greater than the target than we speeed up (to a limit)
+
+		Lets also add some random noise in there
+
 		"""
-		proposed_speed = self.target_speed * ( following_distance / self.target_following_distance)
-		truncated_speed = np.min([proposed_speed, self.target_speed])
-		return truncated_speed
+		# proposed_speed = self.target_speed * ( following_distance / self.target_following_distance)
+		# truncated_speed = np.min([proposed_speed, self.target_speed])
+		# return truncated_speed
 		
+		if (following_distance < self.target_following_distance):
+			# Slow down
+			next_speed = current_speed - (1/self.hz)*5
+		elif (following_distance > self.target_following_distance):
+			# speed up
+			next_speed = current_speed + (1/self.hz)*5
+		else:
+			# euquals
+			next_speed = current_speed
+
+		# add some noise
+		next_speed += np.random.normal(0, 2)
+
+		return next_speed
 		
 		
 	"""
